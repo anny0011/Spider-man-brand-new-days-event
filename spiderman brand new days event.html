@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mortal Kombat 1 Tournament Manager</title>
+
+<style>
+:root{
+    --bg:#0f0f0f;
+    --card:#1b1b1b;
+    --gold:#ffb300;
+    --text:#f5f5f5;
+    --border:#333;
+    --green:#18c964;
+    --red:#f31260;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:Arial, Helvetica, sans-serif;
+    padding:20px;
+}
+
+.container{
+    max-width:1300px;
+    margin:auto;
+}
+
+header{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+header h1{
+    color:var(--gold);
+    font-size:2.3rem;
+}
+
+header p{
+    color:#bbb;
+    margin-top:8px;
+}
+
+.card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:15px;
+    padding:20px;
+    margin-bottom:25px;
+}
+
+.card h2{
+    color:var(--gold);
+    margin-bottom:15px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th, td{
+    border:1px solid var(--border);
+    padding:10px;
+    text-align:center;
+}
+
+th{
+    background:#222;
+}
+
+.rank1{
+    color:gold;
+    font-weight:bold;
+}
+
+.rank2{
+    color:silver;
+    font-weight:bold;
+}
+
+.rank3{
+    color:#cd7f32;
+    font-weight:bold;
+}
+
+.match{
+    display:grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap:10px;
+    margin-bottom:10px;
+    padding:12px;
+    border:1px solid var(--border);
+    border-radius:10px;
+}
+
+select{
+    padding:8px;
+    border-radius:8px;
+    border:none;
+}
+
+.player-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:10px;
+}
+
+.player-card{
+    background:#222;
+    padding:15px;
+    text-align:center;
+    border-radius:10px;
+}
+
+.player-card h3{
+    color:var(--gold);
+}
+
+.footer{
+    text-align:center;
+    margin-top:20px;
+    color:#aaa;
+}
+
+@media(max-width:700px){
+    .match{
+        grid-template-columns:1fr;
+    }
+
+    table{
+        font-size:12px;
+    }
+
+    th,td{
+        padding:6px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+    <h1>🏆 Mortal Kombat 1 Tournament</h1>
+    <p>7 Players • 14 Matches • Best of 3</p>
+</header>
+
+<div class="card">
+    <h2>Players</h2>
+
+    <div class="player-grid">
+        <div class="player-card"><h3>Nikhil</h3></div>
+        <div class="player-card"><h3>Rishi</h3></div>
+        <div class="player-card"><h3>Mohit</h3></div>
+        <div class="player-card"><h3>Aditya</h3></div>
+        <div class="player-card"><h3>Kshitiz</h3></div>
+        <div class="player-card"><h3>Harsh</h3></div>
+        <div class="player-card"><h3>Abhiraj</h3></div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>📊 Live Standings</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Pts</th>
+                <th>MW</th>
+                <th>ML</th>
+                <th>RW</th>
+                <th>RL</th>
+                <th>RD</th>
+            </tr>
+        </thead>
+        <tbody id="leaderboard"></tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h2>🎮 Match Results</h2>
+
+    <div id="matches"></div>
+</div>
+
+<div class="footer">
+    Mortal Kombat 1 League Manager
+</div>
+
+</div>
+
+<script>
+
+const players = [
+"Nikhil",
+"Rishi",
+"Mohit",
+"Aditya",
+"Kshitiz",
+"Harsh",
+"Abhiraj"
+];
+
+const matches = [
+
+["Nikhil","Rishi"],
+["Nikhil","Mohit"],
+["Nikhil","Aditya"],
+["Nikhil","Kshitiz"],
+
+["Rishi","Mohit"],
+["Rishi","Harsh"],
+["Rishi","Abhiraj"],
+
+["Mohit","Aditya"],
+["Mohit","Kshitiz"],
+
+["Aditya","Harsh"],
+["Aditya","Abhiraj"],
+
+["Kshitiz","Harsh"],
+["Kshitiz","Abhiraj"],
+
+["Harsh","Abhiraj"]
+
+];
+
+const matchesContainer =
+document.getElementById("matches");
+
+matches.forEach((match,index)=>{
+
+const div=document.createElement("div");
+
+div.className="match";
+
+div.innerHTML=`
+
+<div>
+<b>Match ${index+1}</b><br>
+${match[0]} vs ${match[1]}
+</div>
+
+<select class="winner">
+<option value="">Winner</option>
+<option value="${match[0]}">${match[0]}</option>
+<option value="${match[1]}">${match[1]}</option>
+</select>
+
+<select class="score">
+<option value="">Score</option>
+<option value="2-0">2-0</option>
+<option value="2-1">2-1</option>
+</select>
+
+`;
+
+matchesContainer.appendChild(div);
+
+});
+
+document.addEventListener("change",updateTable);
+
+function emptyStats(){
+
+const stats={};
+
+players.forEach(player=>{
+
+stats[player]={
+pts:0,
+mw:0,
+ml:0,
+rw:0,
+rl:0
+};
+
+});
+
+return stats;
+
+}
+
+function updateTable(){
+
+const stats=emptyStats();
+
+const winnerSelects=
+document.querySelectorAll(".winner");
+
+const scoreSelects=
+document.querySelectorAll(".score");
+
+matches.forEach((match,index)=>{
+
+const p1=match[0];
+const p2=match[1];
+
+const winner=
+winnerSelects[index].value;
+
+const score=
+scoreSelects[index].value;
+
+if(!winner || !score) return;
+
+const loser =
+winner===p1 ? p2 : p1;
+
+stats[winner].mw++;
+stats[loser].ml++;
+
+if(score==="2-0"){
+
+stats[winner].pts +=3;
+
+stats[winner].rw +=2;
+stats[winner].rl +=0;
+
+stats[loser].rw +=0;
+stats[loser].rl +=2;
+
+}
+
+if(score==="2-1"){
+
+stats[winner].pts +=2;
+stats[loser].pts +=1;
+
+stats[winner].rw +=2;
+stats[winner].rl +=1;
+
+stats[loser].rw +=1;
+stats[loser].rl +=2;
+
+}
+
+});
+
+const rows=[];
+
+players.forEach(player=>{
+
+rows.push({
+
+name:player,
+pts:stats[player].pts,
+mw:stats[player].mw,
+ml:stats[player].ml,
+rw:stats[player].rw,
+rl:stats[player].rl,
+rd:stats[player].rw - stats[player].rl
+
+});
+
+});
+
+rows.sort((a,b)=>{
+
+if(b.pts!==a.pts)
+return b.pts-a.pts;
+
+if(b.rd!==a.rd)
+return b.rd-a.rd;
+
+return b.rw-a.rw;
+
+});
+
+const leaderboard=
+document.getElementById("leaderboard");
+
+leaderboard.innerHTML="";
+
+rows.forEach((row,index)=>{
+
+const tr=document.createElement("tr");
+
+let rankClass="";
+
+if(index===0) rankClass="rank1";
+if(index===1) rankClass="rank2";
+if(index===2) rankClass="rank3";
+
+let medal="";
+
+if(index===0) medal="🏆";
+if(index===1) medal="🥈";
+if(index===2) medal="🥉";
+
+tr.innerHTML=`
+
+<td class="${rankClass}">
+${index+1} ${medal}
+</td>
+
+<td>${row.name}</td>
+<td>${row.pts}</td>
+<td>${row.mw}</td>
+<td>${row.ml}</td>
+<td>${row.rw}</td>
+<td>${row.rl}</td>
+<td>${row.rd}</td>
+
+`;
+
+leaderboard.appendChild(tr);
+
+});
+
+}
+
+updateTable();
+
+</script>
+
+</body>
+</html>
